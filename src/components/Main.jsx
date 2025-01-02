@@ -2,25 +2,34 @@ import { useEffect, useState } from "react"
 
 export default function Main() {
 
-    const [getMeme, setGetMeme] = useState({
+    const [meme, setMeme] = useState({
         imgUrl: "http://i.imgflip.com/1bij.jpg",
         topText: "One does not simply",
         bottomText: "Walk into Mordor"
     });
 
-    const [allMemes, setAllMemes] = useState([]);
+    const [apiMemes, setApiMemes] = useState([]);
 
     useEffect(() => {
         fetch("https://api.imgflip.com/get_memes")
             .then(res => res.json())
-            .then(data => setAllMemes(data.data.memes))
+            .then(data => setApiMemes(data.data.memes))
     }, []);
 
     function inputTxt(e) {
         const {value, name} = e.currentTarget
-        setGetMeme(prevMeme => ({
+        setMeme(prevMeme => ({
             ...prevMeme,
             [name]: value
+        }));
+    }
+
+    function getMeme() {
+        const randomNum = Math.floor(Math.random() * apiMemes.length)
+        const genMeme = apiMemes[randomNum].url
+        setMeme(prevMeme => ({
+            ...prevMeme,
+            imgUrl: genMeme
         }));
     }
 
@@ -33,7 +42,7 @@ export default function Main() {
                         placeholder="One does not simply"
                         name="topText"
                         onChange={inputTxt}
-                        value={getMeme.topText}
+                        value={meme.topText}
                     />
                 </label>
                 <label>Bottom Text
@@ -42,15 +51,15 @@ export default function Main() {
                         placeholder="Walk into Mordor"
                         name="bottomText"
                         onChange={inputTxt}
-                        value={getMeme.bottomText}
+                        value={meme.bottomText}
                     />
                 </label>
-                <button>Get your own mere 🖼</button>
+                <button onClick={getMeme}>Get your own mere 🖼</button>
             </div>
             <div className="meme">
-                <img src={getMeme.imgUrl} alt="generated-meme" />
-                <span className="top">{getMeme.topText}</span>
-                <span className="bottom">{getMeme.bottomText}</span>
+                <img src={meme.imgUrl} alt="generated-meme" />
+                <span className="top">{meme.topText}</span>
+                <span className="bottom">{meme.bottomText}</span>
             </div>
         </main>
     );
